@@ -70,3 +70,6 @@ fastlane/test_output
 # Misc
 .DS_Store
 EOF
+
+Pods/
+Podfile.lock

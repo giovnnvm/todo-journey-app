@@ -1,9 +1,8 @@
 name: TodoJourneyApp
 options:
-  minimumXcodeGenVersion: 2.32.0
+  postGenCommand: pod install --repo-update
   deploymentTarget:
     iOS: "15.0"
-  createIntermediateGroups: true
   indentWidth: 4
   tabWidth: 4
 
@@ -16,58 +15,67 @@ settings:
     IPHONEOS_DEPLOYMENT_TARGET: "15.0"
     TARGETED_DEVICE_FAMILY: "1"
     CODE_SIGN_STYLE: Automatic
-    ENABLE_BITCODE: NO
     DEAD_CODE_STRIPPING: YES
     COPY_PHASE_STRIP: YES
     CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
+    ASSETCATALOG_COMPILER_OPTIMIZATION: space
+    COMPRESS_PNG_FILES: YES
+    STRIP_INSTALLED_PRODUCT: YES
+    STRIP_STYLE: "all"
+    PRODUCT_NAME: $(TARGET_NAME)
+    PRODUCT_BUNDLE_IDENTIFIER: com.giovannimoratto.$(PRODUCT_NAME)
+    MARKETING_VERSION: 1.0.0
+    CURRENT_PROJECT_VERSION: 1
   configs:
     Debug:
       SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
       ENABLE_TESTABILITY: YES
       ONLY_ACTIVE_ARCH: YES
+      SWIFT_OPTIMIZATION_LEVEL: -Onone
+      DEBUG_INFORMATION_FORMAT: dwarf
     Release:
       SWIFT_COMPILATION_MODE: wholemodule
-      SWIFT_OPTIMIZATION_LEVEL: -O
-      VALIDATE_PRODUCT: YES
+      SWIFT_OPTIMIZATION_LEVEL: -Osize
+      ENABLE_TESTABILITY: NO
+      DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+      LLVM_LTO: YES_THIN
+      DEAD_CODE_STRIPPING: YES
+      STRIP_INSTALLED_PRODUCT: YES
+      STRIP_STYLE: "all"
+      OTHER_LDFLAGS: ["-dead_strip", "-dead_strip_dylibs"]
 
 targets:
   TodoJourneyApp:
     type: application
     platform: iOS
-    deploymentTarget: "15.0"
     sources:
       - path: App
+      - path: Presentation
       - path: Domain
       - path: Data
-      - path: Presentation
       - path: Support
     resources:
       - path: Resources
         optional: true
+      - path: App/GoogleService-Info.plist
+        optional: false
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.giovannimoratto.todojourney
-        MARKETING_VERSION: 1.0.0
-        CURRENT_PROJECT_VERSION: 1
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: App/Info.plist
-    dependencies:
-      - sdk: UIKit.framework
-      - sdk: Foundation.framework
 
   TodoJourneyAppTests:
     type: bundle.unit-test
     platform: iOS
-    deploymentTarget: "15.0"
+    gatherCoverageData: true
+    dependencies:
+      - target: TodoJourneyApp
     sources:
       - path: Tests/Unit
         optional: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.giovannimoratto.todojourney.tests
         GENERATE_INFOPLIST_FILE: YES
-    dependencies:
-      - target: TodoJourneyApp
 
   TodoJourneyAppUITests:
     type: bundle.ui-testing
@@ -78,7 +86,6 @@ targets:
         optional: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.giovannimoratto.todojourney.uitests
         GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: TodoJourneyApp
@@ -113,3 +120,4 @@ fileGroups:
   - Support
   - Resources
   - Tests
+  - project.yml
